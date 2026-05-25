@@ -644,56 +644,52 @@ body {
 
   function startPhotoAnimation() {
     var stage = photoStage;
-    var count = 16;
+    var stageW = stage.offsetWidth || window.innerWidth;
+    var stageH = stage.offsetHeight || window.innerHeight;
+    var totalPhotos = 16;
 
-    // 1. 用 canvas 画"生日快乐"，扫描像素落点
-    var canvas = document.createElement('canvas');
-    var cw = 600, ch = 160;
-    canvas.width = cw; canvas.height = ch;
-    var ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#000';
-    ctx.font = 'bold 100px "Noto Sans SC","Microsoft YaHei",sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('生日快乐', cw / 2, ch / 2);
+    // 1. 16×8 点阵：每行 16 列（生4 + 日4 + 快4 + 乐4），'1'=有照片
+    var rows = [
+      '1110111110011111',  // 生:顶部横 日:顶 快:两点 乐:顶
+      '1000100110011000',  // 生:左竖 日:左 快:两点 乐:左起笔
+      '1110100111111111',  // 生:中横 日:左 快:横 乐:横
+      '0010111110101010',  // 生:短竖 日:中横 快:交点 乐:交点
+      '1110100110101111',  // 生:下横 日:左 快:交点 乐:横
+      '1010100110111010',  // 生:底角 日:左 快:底部 乐:交点
+      '1111111100001000',  // 生:底横 日:底 快:空 乐:左竖
+      '0000000000001111'   //        日:空 快:空 乐:底横
+    ];
 
-    var imageData = ctx.getImageData(0, 0, cw, ch).data;
-    var pixels = [];
-    for (var y = 0; y < ch; y++) {
-      for (var x = 0; x < cw; x++) {
-        var a = imageData[(y * cw + x) * 4 + 3];
-        if (a > 80) pixels.push({ x: x, y: y });
+    // 2. 解析点阵，收集所有落点 (col, row)
+    var dots = [];
+    for (var r = 0; r < rows.length; r++) {
+      for (var c = 0; c < rows[r].length; c++) {
+        if (rows[r][c] === '1') dots.push({ col: c, row: r });
       }
     }
 
-    // 2. 从文字像素中均匀采样 N 个落点
-    var targets = [];
-    var step = Math.max(1, Math.floor(pixels.length / count));
-    for (var i = 0; i < count; i++) {
-      var p = pixels[Math.min(i * step, pixels.length - 1)];
-      targets.push({
-        left: 10 + (p.x / cw) * 80,   // %  文字区域占舞台 80% 宽，左边距 10%
-        top: 30 + (p.y / ch) * 40     // %  文字区域占舞台 40% 高，上边距 30%
-      });
-    }
+    // 3. 计算格子尺寸（舞台居中，宽度取 88vw，最大 640px，最少 300px）
+    var gridCols = 16, gridRows = 8;
+    var cell = Math.floor(Math.min(stageW * 0.88, 640) / gridCols);
+    if (cell < 22) cell = 22;
+    if (cell > 40) cell = 40;
+    var gw = cell * gridCols;
+    var gh = cell * gridRows;
+    var ox = (stageW - gw) / 2;   // 舞台居中偏移 px
+    var oy = (stageH - gh) / 2;
 
-    // 3. 创建 img 元素并设置初始位置
-    var imgs = [];
-    for (var j = 1; j <= count; j++) {
+    // 4. 为每个落点创建 img（16 张照片循环使用）
+    var items = [];
+    dots.forEach(function(d, i) {
       var img = document.createElement('img');
       img.className = 'photo-item';
-      img.src = 'photos/p' + j + '.jpg';
-      img.dataset.index = j;
-      stage.appendChild(img);
-      imgs.push({ el: img, target: targets[j - 1] });
-    }
+      img.src = 'photos/p' + ((i % totalPhotos) + 1) + '.jpg';
 
-    // 4. 飞入动画
-    imgs.forEach(function(item, idx) {
-      var img = item.el;
-      var t = item.target;
+      // 目标位置：百分比
+      var tx = (ox + d.col * cell) / stageW * 100;
+      var ty = (oy + d.row * cell) / stageH * 100;
 
-      // 随机起始方向（四个方向）
+      // 初始位置：随机四方向屏幕外 + 旋转
       var side = Math.floor(Math.random() * 4);
       var sx, sy;
       if (side === 0)      { sx = -20; sy = Math.random() * 100; }
@@ -705,29 +701,34 @@ body {
       img.style.top = sy + '%';
       img.style.width = '110px';
       img.style.height = '110px';
-      img.style.transform = 'rotate(' + (Math.random() * 50 - 25) + 'deg)';
+      img.style.transform = 'rotate(' + (Math.random() * 55 - 27) + 'deg)';
       img.style.opacity = '1';
+      stage.appendChild(img);
 
-      // 延迟后飞向目标
-      var delay = 200 + idx * 150;
+      items.push({ el: img, tx: tx, ty: ty, size: cell - 2 });
+    });
+
+    // 5. 分批延迟飞入（2 秒内全部到位）
+    var flyDuration = 2000;
+    var interval = flyDuration / items.length;
+    items.forEach(function(item, idx) {
+      var delay = 200 + idx * interval + Math.random() * 100;
       setTimeout(function() {
-        img.style.left = t.left + '%';
-        img.style.top = t.top + '%';
-        img.style.width = '52px';
-        img.style.height = '52px';
-        img.style.transform = 'rotate(' + (Math.random() * 8 - 4) + 'deg)';
+        item.el.style.left = item.tx + '%';
+        item.el.style.top = item.ty + '%';
+        item.el.style.width = item.size + 'px';
+        item.el.style.height = item.size + 'px';
+        item.el.style.transform = 'rotate(' + (Math.random() * 8 - 4) + 'deg)';
       }, delay);
     });
 
-    // 5. 归位后半透明化
-    var settleTime = 200 + count * 150 + 1800;
+    // 6. 落定后半透明化
+    var settleTime = 200 + flyDuration + 400;
     setTimeout(function() {
-      imgs.forEach(function(item) {
-        item.el.classList.add('settled');
-      });
+      items.forEach(function(item) { item.el.classList.add('settled'); });
     }, settleTime);
 
-    // 6. 显示折叠卡片
+    // 7. 浮现折叠卡片
     setTimeout(function() {
       if (resultCard) {
         resultCard.classList.remove('hidden');
