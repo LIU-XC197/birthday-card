@@ -80,6 +80,106 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-10px) rotate(-2deg); }
+  70% { transform: translateY(8px) rotate(2deg); }
+}
+
+/* ── Hello Kitty ── */
+.kitty {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  animation: float 4.5s ease-in-out infinite;
+}
+.kitty-face {
+  width: 88px; height: 76px;
+  background: #fff;
+  border-radius: 46% 46% 48% 48%;
+  position: relative;
+  box-shadow: 0 3px 12px rgba(231,84,128,0.1), 0 1px 3px rgba(0,0,0,0.05);
+}
+.kitty-ear {
+  position: absolute;
+  width: 0; height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 22px solid #fff;
+  top: -15px;
+  filter: drop-shadow(0 -1px 1px rgba(0,0,0,0.04));
+}
+.kitty-ear.left { left: 6px; transform: rotate(-18deg); }
+.kitty-ear.right { right: -2px; transform: rotate(18deg); }
+
+/* bow */
+.kitty-bow {
+  position: absolute;
+  top: -26px; right: -8px;
+  width: 28px; height: 18px;
+}
+.kitty-bow::before, .kitty-bow::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 10px;
+  background: #E75480;
+  border-radius: 50%;
+  top: 4px;
+}
+.kitty-bow::before { left: 0; transform: rotate(-25deg); }
+.kitty-bow::after { right: 0; transform: rotate(25deg); }
+.kitty-bow-center {
+  width: 8px; height: 8px;
+  background: #D4416A;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+/* eyes */
+.kitty-eye {
+  position: absolute;
+  width: 6px; height: 8px;
+  background: #3a3a3a;
+  border-radius: 50%;
+  top: 30px;
+}
+.kitty-eye.left { left: 20px; }
+.kitty-eye.right { right: 20px; }
+
+/* nose */
+.kitty-nose {
+  position: absolute;
+  width: 11px; height: 8px;
+  background: #FFD700;
+  border-radius: 50%;
+  top: 39px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* whiskers */
+.kw-left, .kw-right {
+  position: absolute;
+  width: 24px; height: 0;
+  border-top: 1px solid #c0c0c0;
+  top: 43px;
+}
+.kw-left {
+  right: calc(50% + 6px);
+  box-shadow: 0 5px 0 #c0c0c0, 0 10px 0 #c0c0c0;
+  transform: rotate(-10deg);
+  transform-origin: right center;
+}
+.kw-right {
+  left: calc(50% + 6px);
+  box-shadow: 0 5px 0 #c0c0c0, 0 10px 0 #c0c0c0;
+  transform: rotate(10deg);
+  transform-origin: left center;
+}
+
 /* ── 卡片 ── */
 .card {
   position: relative;
@@ -232,6 +332,20 @@ body {
   .cover-emoji { font-size: 48px; }
   .arrow-btn { display: none; }
   .nav-dots { bottom: 28px; }
+  .kitty-face { width: 66px; height: 57px; }
+  .kitty-ear { border-left-width:9px; border-right-width:9px; border-bottom-width:17px; top:-11px; }
+  .kitty-ear.left { left:4px; }
+  .kitty-ear.right { right:-2px; }
+  .kitty-bow { top:-20px; right:-6px; width:22px; height:14px; }
+  .kitty-bow::before, .kitty-bow::after { width:12px; height:8px; }
+  .kitty-bow-center { width:6px; height:6px; }
+  .kitty-eye { width:5px; height:6px; top:22px; }
+  .kitty-eye.left { left:15px; }
+  .kitty-eye.right { right:15px; }
+  .kitty-nose { width:8px; height:6px; top:29px; }
+  .kw-left, .kw-right { width:18px; top:32px; }
+  .kw-left { right:calc(50% + 4px); }
+  .kw-right { left:calc(50% + 4px); }
 }
 </style>
 </head>
@@ -250,6 +364,18 @@ body {
       <h1 class="cover-title">生日快乐</h1>
       <p class="cover-sub">Happy Birthday</p>
       <p class="cover-hint">向下翻开 →</p>
+    </div>
+    <div class="kitty" style="bottom:4%;right:4%;">
+      <div class="kitty-face">
+        <div class="kitty-ear left"></div>
+        <div class="kitty-ear right"></div>
+        <div class="kitty-bow"><span class="kitty-bow-center"></span></div>
+        <div class="kitty-eye left"></div>
+        <div class="kitty-eye right"></div>
+        <div class="kitty-nose"></div>
+        <div class="kw-left"></div>
+        <div class="kw-right"></div>
+      </div>
     </div>
     <span class="page-num">1 / 6</span>
   </section>
@@ -312,6 +438,18 @@ body {
       <span class="end-emoji">🎀 🎂 🎀</span>
       <p class="end-text">愿你如 Hello Kitty 般<br>永远可爱 · 永远被爱</p>
       <p class="end-sign">With love, always</p>
+    </div>
+    <div class="kitty" style="bottom:4%;left:4%;">
+      <div class="kitty-face">
+        <div class="kitty-ear left"></div>
+        <div class="kitty-ear right"></div>
+        <div class="kitty-bow"><span class="kitty-bow-center"></span></div>
+        <div class="kitty-eye left"></div>
+        <div class="kitty-eye right"></div>
+        <div class="kitty-nose"></div>
+        <div class="kw-left"></div>
+        <div class="kw-right"></div>
+      </div>
     </div>
     <span class="page-num">6 / 6</span>
   </section>
