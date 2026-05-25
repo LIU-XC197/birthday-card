@@ -359,6 +359,56 @@ body {
   border-top: 2px dashed rgba(255,215,0,0.3);
 }
 
+/* ── 照片动画舞台 ── */
+.photo-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.photo-item {
+  position: absolute;
+  width: 80px; height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 16px rgba(231,84,128,0.2);
+  opacity: 0;
+  transition: none;
+}
+.photo-item.flying {
+  opacity: 1;
+}
+.photo-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  font-size: 48px;
+  font-weight: 700;
+  color: #E75480;
+  text-shadow: 0 2px 20px rgba(255,255,255,0.8);
+  opacity: 0;
+  letter-spacing: 8px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.photo-title.show {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+.fold-card.hidden {
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.fold-card.hidden.reveal {
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 0.8s ease;
+}
+
 /* ── 移动端适配 ── */
 @media (max-width: 480px) {
   .card { padding: 36px 24px; }
@@ -414,12 +464,13 @@ body {
     <span class="page-num">1 / 6</span>
   </section>
 
-  <!-- ═══ 第2页：内页 ═══ -->
-  <section class="page inner" data-page="2">
+  <!-- ═══ 第2页：照片动画 ═══ -->
+  <section class="page inner photo-page" data-page="2">
     <span class="deco" style="top:10%;left:14%;font-size:22px;">💕</span>
     <span class="deco gold" style="top:28%;right:10%;font-size:20px;">⭐</span>
     <span class="deco" style="bottom:30%;left:8%;font-size:24px;">🎀</span>
-    <div class="card fold-card" data-fold="2">
+    <div class="photo-stage" id="photoStage"></div>
+    <div class="card fold-card hidden" id="resultCard" data-fold="2">
       <div class="fold-header">
         <h2>💝 独家礼物</h2>
         <span class="fold-icon">▼</span>
@@ -590,6 +641,90 @@ body {
       this.classList.toggle('open');
     });
   });
+
+  // ── 照片飞入动画（第2页专用） ──
+  var photoPage = document.querySelector('.photo-page');
+  var photoStage = document.getElementById('photoStage');
+  var resultCard = document.getElementById('resultCard');
+  var animationDone = false;
+
+  if (photoPage && photoStage) {
+    var photoObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !animationDone) {
+          animationDone = true;
+          startPhotoAnimation();
+        }
+      });
+    }, { threshold: 0.3 });
+    photoObserver.observe(photoPage);
+  }
+
+  function startPhotoAnimation() {
+    var stage = photoStage;
+    var count = 16;
+    var imgs = [];
+    for (var i = 1; i <= count; i++) {
+      var img = document.createElement('img');
+      img.className = 'photo-item';
+      img.src = 'photos/p' + i + '.jpg';
+      img.dataset.index = i;
+      stage.appendChild(img);
+      imgs.push(img);
+    }
+
+    imgs.forEach(function(img, idx) {
+      var side = Math.floor(Math.random() * 4);
+      var startX, startY;
+      if (side === 0) { startX = -15; startY = Math.random() * 100; }
+      else if (side === 1) { startX = 105; startY = Math.random() * 100; }
+      else if (side === 2) { startX = Math.random() * 100; startY = -15; }
+      else { startX = Math.random() * 100; startY = 105; }
+
+      img.style.left = startX + '%';
+      img.style.top = startY + '%';
+      img.style.width = (50 + Math.random() * 40) + 'px';
+      img.style.height = img.style.width;
+      img.style.transform = 'rotate(' + (Math.random() * 60 - 30) + 'deg)';
+      img.style.opacity = '0';
+
+      var col = idx % 4;
+      var row = Math.floor(idx / 4);
+      var finalLeft = 12 + col * 22;
+      var finalTop = 10 + row * 22;
+
+      var delay = 300 + idx * 180;
+      setTimeout(function() {
+        img.style.transition = 'all 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        img.style.opacity = '1';
+        img.style.left = finalLeft + '%';
+        img.style.top = finalTop + '%';
+        img.style.width = '60px';
+        img.style.height = '60px';
+        img.style.transform = 'rotate(' + (Math.random() * 10 - 5) + 'deg)';
+      }, delay);
+    });
+
+    // 显示"生日快乐"标题
+    setTimeout(function() {
+      var title = document.createElement('div');
+      title.className = 'photo-title show';
+      title.textContent = '🎀 生日快乐 🎀';
+      stage.appendChild(title);
+    }, 300 + count * 180 + 500);
+
+    // 显示折叠卡片，然后清除舞台
+    setTimeout(function() {
+      if (resultCard) {
+        resultCard.classList.remove('hidden');
+        resultCard.classList.add('reveal');
+      }
+      setTimeout(function() {
+        stage.innerHTML = '';
+        stage.style.display = 'none';
+      }, 2000);
+    }, 300 + count * 180 + 2500);
+  }
 
   // ── 箭头按钮 ──
   arrowUp.addEventListener('click', function() {
