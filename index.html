@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta property="og:title" content="🎀 生日快乐 🎀">
+<meta property="og:description" content="愿你永远被世界温柔以待">
+<meta property="og:image" content="https://liu-xing-rain.gitee.io/birthday-card/preview.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://liu-xing-rain.gitee.io/birthday-card/">
+<meta name="description" content="🎀 生日快乐 — 愿你永远被世界温柔以待">
+<title>🎀 生日快乐 🎀</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  background: #FFF0F5;
+  overflow: hidden;
+  height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── 滚动容器 ── */
+.scroller {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+.scroller::-webkit-scrollbar { display: none; }
+
+/* ── 每页 ── */
+.page {
+  height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── 背景渐变 ── */
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, #FFF5F8 0%, #FFE8EE 40%, #FFF0F5 100%);
+  z-index: 0;
+}
+
+/* ── 装饰元素 ── */
+.deco {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  animation: breathe 3s ease-in-out infinite;
+  opacity: 0.6;
+  font-size: 24px;
+  user-select: none;
+}
+.deco.gold { color: #FFD700; }
+.deco:nth-child(odd) { animation-delay: 0s; }
+.deco:nth-child(even) { animation-delay: 1.5s; }
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.15); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 卡片 ── */
+.card {
+  position: relative;
+  z-index: 2;
+  background: rgba(255,250,250,0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(231,84,128,0.18);
+  border-radius: 24px;
+  padding: 48px 36px;
+  max-width: 420px;
+  width: 88%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(231,84,128,0.12), 0 2px 8px rgba(0,0,0,0.04);
+  animation: fadeInUp .8s ease both;
+}
+
+/* ── 封面样式 ── */
+.cover .card {
+  padding: 56px 36px;
+}
+.cover-emoji {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 12px;
+  animation: breathe 2.5s ease-in-out infinite;
+}
+.cover-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #E75480;
+  letter-spacing: 4px;
+  margin-bottom: 4px;
+}
+.cover-sub {
+  font-family: 'Dancing Script', cursive;
+  font-size: 22px;
+  color: #D4728A;
+  margin-bottom: 32px;
+}
+.cover-hint {
+  font-size: 13px;
+  color: #C08090;
+  letter-spacing: 2px;
+  animation: breathe 2s ease-in-out infinite;
+}
+
+/* ── 内页 ── */
+.inner .card {
+  text-align: left;
+  padding: 40px 32px;
+}
+.inner .card h2 {
+  font-size: 22px;
+  color: #E75480;
+  text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: 2px;
+  padding-top: 16px;
+  border-top: 2px dashed rgba(255,215,0,0.4);
+}
+.inner .card p {
+  font-size: 15px;
+  color: #8B4557;
+  line-height: 2;
+}
+
+/* ── 封底 ── */
+.end .card {
+  padding: 56px 36px;
+}
+.end-emoji {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 16px;
+}
+.end-text {
+  font-size: 16px;
+  color: #8B4557;
+  line-height: 2.2;
+  margin-bottom: 20px;
+}
+.end-sign {
+  font-family: 'Dancing Script', cursive;
+  font-size: 24px;
+  color: #E75480;
+}
+
+/* ── 页码水印 ── */
+.page-num {
+  position: absolute;
+  bottom: 24px;
+  right: 28px;
+  font-size: 12px;
+  color: rgba(231,84,128,0.2);
+  font-weight: 500;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── PC 箭头按钮 ── */
+.arrow-btn {
+  position: fixed;
+  right: 20px;
+  z-index: 100;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(231,84,128,0.12);
+  border: 1px solid rgba(231,84,128,0.2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #E75480;
+  transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.arrow-btn:hover { background: rgba(231,84,128,0.22); }
+.arrow-btn:active { transform: scale(0.92); }
+.arrow-up { top: 24px; }
+.arrow-down { bottom: 100px; }
+.arrow-btn.hidden { opacity: 0; pointer-events: none; }
+
+/* ── 底部导航点 ── */
+.nav-dots {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+.nav-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(231,84,128,0.25);
+  cursor: pointer;
+  transition: all .3s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-dot.active {
+  background: #E75480;
+  box-shadow: 0 0 10px rgba(231,84,128,0.4);
+  transform: scale(1.3);
+}
+
+/* ── 移动端适配 ── */
+@media (max-width: 480px) {
+  .card { padding: 36px 24px; }
+  .cover-title { font-size: 28px; letter-spacing: 2px; }
+  .cover-emoji { font-size: 48px; }
+  .arrow-btn { display: none; }
+  .nav-dots { bottom: 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="scroller" id="scroller">
+
+  <!-- ═══ 第1页：封面 ═══ -->
+  <section class="page cover" data-page="1">
+    <span class="deco" style="top:12%;left:8%;font-size:28px;">🎀</span>
+    <span class="deco" style="top:20%;right:12%;font-size:22px;">⭐</span>
+    <span class="deco" style="bottom:25%;left:10%;font-size:20px;">💕</span>
+    <span class="deco" style="bottom:18%;right:8%;font-size:26px;">🎀</span>
+    <div class="card">
+      <span class="cover-emoji">🎀</span>
+      <h1 class="cover-title">生日快乐</h1>
+      <p class="cover-sub">Happy Birthday</p>
+      <p class="cover-hint">向下翻开 →</p>
+    </div>
+    <span class="page-num">1 / 6</span>
+  </section>
+
+  <!-- ═══ 第2页：内页 ═══ -->
+  <section class="page inner" data-page="2">
+    <span class="deco" style="top:10%;left:14%;font-size:22px;">💕</span>
+    <span class="deco gold" style="top:28%;right:10%;font-size:20px;">⭐</span>
+    <span class="deco" style="bottom:30%;left:8%;font-size:24px;">🎀</span>
+    <div class="card">
+      <h2>✨ 最美的祝福</h2>
+      <p>愿你的每一天<br>都像今天一样<br>被甜蜜包围</p>
+    </div>
+    <span class="page-num">2 / 6</span>
+  </section>
+
+  <!-- ═══ 第3页：内页 ═══ -->
+  <section class="page inner" data-page="3">
+    <span class="deco" style="top:16%;right:14%;font-size:24px;">🎀</span>
+    <span class="deco" style="top:35%;left:10%;font-size:20px;">⭐</span>
+    <span class="deco" style="bottom:22%;right:10%;font-size:22px;">💕</span>
+    <div class="card">
+      <h2>🌸 温柔岁月</h2>
+      <p>愿你眼里有光<br>心中有爱<br>目光所至皆是美好</p>
+    </div>
+    <span class="page-num">3 / 6</span>
+  </section>
+
+  <!-- ═══ 第4页：内页 ═══ -->
+  <section class="page inner" data-page="4">
+    <span class="deco" style="top:12%;left:12%;font-size:20px;">💕</span>
+    <span class="deco" style="top:40%;right:8%;font-size:26px;">🎀</span>
+    <span class="deco" style="bottom:28%;left:14%;font-size:22px;">⭐</span>
+    <div class="card">
+      <h2>🎂 许愿时刻</h2>
+      <p>所有的愿望<br>都会被听见<br>所有的梦想<br>都会慢慢实现</p>
+    </div>
+    <span class="page-num">4 / 6</span>
+  </section>
+
+  <!-- ═══ 第5页：内页 ═══ -->
+  <section class="page inner" data-page="5">
+    <span class="deco" style="top:18%;right:12%;font-size:24px;">⭐</span>
+    <span class="deco" style="top:32%;left:8%;font-size:20px;">🎀</span>
+    <span class="deco" style="bottom:24%;right:10%;font-size:22px;">💕</span>
+    <div class="card">
+      <h2>💝 感恩相遇</h2>
+      <p>感谢生命中<br>每一个有你的日子<br>愿我们一直这样<br>温暖彼此</p>
+    </div>
+    <span class="page-num">5 / 6</span>
+  </section>
+
+  <!-- ═══ 第6页：封底 ═══ -->
+  <section class="page end" data-page="6">
+    <span class="deco" style="top:14%;left:10%;font-size:26px;">🎀</span>
+    <span class="deco" style="top:24%;right:12%;font-size:22px;">💕</span>
+    <span class="deco" style="bottom:26%;left:12%;font-size:24px;">⭐</span>
+    <span class="deco" style="bottom:16%;right:10%;font-size:28px;">🎀</span>
+    <div class="card">
+      <span class="end-emoji">🎀 🎂 🎀</span>
+      <p class="end-text">愿你如 Hello Kitty 般<br>永远可爱 · 永远被爱</p>
+      <p class="end-sign">With love, always</p>
+    </div>
+    <span class="page-num">6 / 6</span>
+  </section>
+
+</div><!-- .scroller -->
+
+<!-- PC 箭头 -->
+<button class="arrow-btn arrow-up" id="arrowUp" title="上一页">▲</button>
+<button class="arrow-btn arrow-down" id="arrowDown" title="下一页">▼</button>
+
+<!-- 导航圆点 -->
+<div class="nav-dots" id="navDots"></div>
+
+<!-- 音乐播放器 -->
+<audio id="bgm" loop preload="auto">
+  <source src="https://cdn.jsdelivr.net/gh/nickhsine/audio@master/happy-birthday-piano.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+(function() {
+  var scroller = document.getElementById('scroller');
+  var pages = document.querySelectorAll('.page');
+  var dotsContainer = document.getElementById('navDots');
+  var arrowUp = document.getElementById('arrowUp');
+  var arrowDown = document.getElementById('arrowDown');
+  var bgm = document.getElementById('bgm');
+  var total = pages.length;
+  var currentIndex = 0;
+  var musicStarted = false;
+
+  // ── 首次点击播放音乐 ──
+  function startMusic() {
+    if (musicStarted) return;
+    musicStarted = true;
+    bgm.play().catch(function() {});
+    document.removeEventListener('click', startMusic);
+    document.removeEventListener('touchstart', startMusic);
+  }
+  document.addEventListener('click', startMusic, { once: false });
+  document.addEventListener('touchstart', startMusic, { once: false });
+
+  // ── 自动生成导航圆点 ──
+  pages.forEach(function(p, i) {
+    var dot = document.createElement('span');
+    dot.className = 'nav-dot';
+    dot.dataset.index = i;
+    dot.addEventListener('click', function() {
+      pages[i].scrollIntoView({ behavior: 'smooth' });
+    });
+    dotsContainer.appendChild(dot);
+  });
+  var dots = dotsContainer.querySelectorAll('.nav-dot');
+  dots[0].classList.add('active');
+
+  // ── IntersectionObserver 更新当前页 ──
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var idx = parseInt(entry.target.dataset.page) - 1;
+        currentIndex = idx;
+        dots.forEach(function(d) { d.classList.remove('active'); });
+        if (dots[idx]) dots[idx].classList.add('active');
+
+        // 箭头显隐
+        arrowUp.classList.toggle('hidden', idx === 0);
+        arrowDown.classList.toggle('hidden', idx === total - 1);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  pages.forEach(function(p) { observer.observe(p); });
+
+  // ── 箭头按钮 ──
+  arrowUp.addEventListener('click', function() {
+    if (currentIndex > 0) pages[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+  });
+  arrowDown.addEventListener('click', function() {
+    if (currentIndex < total - 1) pages[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // ── 键盘翻页 ──
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      if (currentIndex < total - 1) pages[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (currentIndex > 0) pages[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
